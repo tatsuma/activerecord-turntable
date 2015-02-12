@@ -1,3 +1,6 @@
+## activerecord-turntable 3.0.0.alpha (unreleased) ##
+
+
 ## activerecord-turntable 2.1.1 ##
 
 ### Bugfixes
