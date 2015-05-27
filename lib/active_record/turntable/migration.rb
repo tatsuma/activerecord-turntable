@@ -21,9 +21,16 @@ module ActiveRecord::Turntable::Migration
           end
         else
           cluster_names.map do |cluster_name|
-            config['clusters'][cluster_name]["shards"].map do |shard|
+            shards = config['clusters'][cluster_name]["shards"].map do |shard|
               shard["connection"]
             end
+            seq = config['clusters'][cluster_name]["seq"].map do |shard|
+              shard.map {|seq|
+                seq["connection"] if seq["seq_type"] && seq["seq_type"] == "mysql"
+              }
+            end.flatten.compact
+
+            shards + seq
           end.flatten
         end
       )

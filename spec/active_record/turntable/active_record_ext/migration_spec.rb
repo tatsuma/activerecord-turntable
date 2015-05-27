@@ -25,6 +25,19 @@ describe ActiveRecord::Turntable::Migration do
       it { is_expected.to eq(user_cluster_shards) }
     end
 
+    context "With clusters definitions for mysql sequence type" do
+      let(:migration_class) {
+        klass = Class.new(ActiveRecord::Migration) {
+        clusters :mod_cluster
+        }
+      }
+      let(:cluster_config) { ActiveRecord::Base.turntable_config["clusters"]["mod_cluster"] }
+      let(:user_cluster_shards) { cluster_config["shards"].map { |s| s["connection"] } }
+      let(:user_cluster_seq)    { cluster_config["seq"].keys.map { |key| cluster_config["seq"][key]["connection"] } }
+
+      it { is_expected.to eq([user_cluster_shards + user_cluster_seq].flatten) }
+    end
+
     context "With shards definitions" do
       let(:migration_class) {
         klass = Class.new(ActiveRecord::Migration) {
