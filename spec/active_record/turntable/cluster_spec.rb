@@ -11,8 +11,8 @@ describe ActiveRecord::Turntable::Cluster do
   end
   let(:cluster_config) { ActiveRecord::Base.turntable_config[:clusters][:user_cluster] }
   let(:cluster) { ActiveRecord::Turntable::Cluster.new(cluster_config) }
-  let(:mysql_mod_cluster_config) { ActiveRecord::Base.turntable_config[:clusters][:mysql_mod_cluster] }
-  let(:mysql_mod_cluster) { ActiveRecord::Turntable::Cluster.new(mysql_mod_cluster_config) }
+  let(:mod_cluster_config) { ActiveRecord::Base.turntable_config[:clusters][:mod_cluster] }
+  let(:mod_cluster) { ActiveRecord::Turntable::Cluster.new(mod_cluster_config) }
   let(:in_range_shard_key_value) { cluster_config[:shards].last[:less_than] - 1 }
   let(:out_of_range_shard_key_value) { cluster_config[:shards].last[:less_than] }
 
@@ -23,9 +23,9 @@ describe ActiveRecord::Turntable::Cluster do
   end
 
   context "When initialized mysql sequencer type cluster" do
-    subject { mysql_mod_cluster }
+    subject { mod_cluster }
 
-    its(:shards) { should have(2).items }
+    its(:shards) { should have(3).items }
     its(:seq)    { is_expected.not_to be nil }
   end
 

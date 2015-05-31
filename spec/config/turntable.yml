@@ -36,21 +36,11 @@ test:
       algorithm: modulo
       seq:
         user_seq:
-          connection: turntable_user_seq_test
+          seq_type: mysql
+          connection: user_seq
       shards:
         - connection: user_shard_1
         - connection: user_shard_2
         - connection: user_shard_1
         - connection: user_shard_2
         - connection: user_shard_3
-    mysql_mod_cluster:
-      algorithm: modulo
-      seq:
-        user_seq:
-          seq_type: mysql
-          connection: user_seq
-      shards:
-        - connection: user_shard_1
-        - connection: user_shard_2
-        - connection: user_shard_2
- 

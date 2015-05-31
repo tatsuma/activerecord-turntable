@@ -45,8 +45,12 @@ module ActiveRecord::Turntable::Migration
     (self.target_shards ||= []).include?(shard_name)
   end
 
-  def target_master?(shard_name)
+  def target_master_only?(shard_name)
     self.target_shards.blank? && shard_name.blank?
+  end
+
+  def exec_migration_without_turntable?
+    target_master_only?(current_shard) or current_shard.blank? or target_shard?(current_shard)
   end
 
   def announce_with_turntable(message)
@@ -54,7 +58,9 @@ module ActiveRecord::Turntable::Migration
   end
 
   def exec_migration_with_turntable(*args)
-    exec_migration_without_turntable(*args) if target_shard?(current_shard) or target_master?(current_shard)
+    if exec_migration_without_turntable?
+      exec_migration_without_turntable(*args)
+    end
   end
 
   module SchemaStatementsExt
