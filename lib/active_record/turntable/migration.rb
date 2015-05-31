@@ -21,9 +21,16 @@ module ActiveRecord::Turntable::Migration
           end
         else
           cluster_names.map do |cluster_name|
-            config['clusters'][cluster_name]["shards"].map do |shard|
+            shards = config['clusters'][cluster_name]["shards"].map do |shard|
               shard["connection"]
             end
+            seq = config['clusters'][cluster_name]["seq"].map do |shard|
+              shard.map {|seq|
+                seq["connection"] if seq["seq_type"] && seq["seq_type"] == "mysql"
+              }
+            end.flatten.compact
+
+            shards + seq
           end.flatten
         end
       )
@@ -35,7 +42,11 @@ module ActiveRecord::Turntable::Migration
   end
 
   def target_shard?(shard_name)
-    target_shards.blank? or target_shards.include?(shard_name)
+    (self.target_shards ||= []).include?(shard_name)
+  end
+
+  def target_master?(shard_name)
+    self.target_shards.blank? && shard_name.blank?
   end
 
   def announce_with_turntable(message)
@@ -43,7 +54,7 @@ module ActiveRecord::Turntable::Migration
   end
 
   def exec_migration_with_turntable(*args)
-    exec_migration_without_turntable(*args) if target_shard?(current_shard)
+    exec_migration_without_turntable(*args) if target_shard?(current_shard) or target_master?(current_shard)
   end
 
   module SchemaStatementsExt
